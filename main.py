@@ -2,33 +2,12 @@
 import sys
 import RPi.GPIO as GPIO
 import time
-
-import Adafruit_DHT
-
+import subprocess
 
 # Parse command line parameters.
 sensor_args = { '11': Adafruit_DHT.DHT11,
                 '22': Adafruit_DHT.DHT22,
                 '2302': Adafruit_DHT.AM2302 }
-
-# Try to grab a sensor reading.  Use the read_retry method which will retry up
-# to 15 times to get a sensor reading (waiting 2 seconds between each retry).
-#sensor 11 and pin 4
-humidity, temperature = Adafruit_DHT.read_retry(11, 4)
-
-# Un-comment the line below to convert the temperature to Fahrenheit.
-# temperature = temperature * 9/5.0 + 32
-
-# Note that sometimes you won't get a reading and
-# the results will be null (because Linux can't
-# guarantee the timing of calls to read the sensor).
-# If this happens try again!
-if humidity is not None and temperature is not None:
-    print('Temp={0:0.1f}*  Humidity={1:0.1f}%'.format(temperature, humidity))
-else:
-    print('Failed to get reading. Try again!')
-    sys.exit(1)
-
 
 LedPin = 11    # pin11
 
@@ -39,8 +18,9 @@ def setup():
 
 def loop():
         while True:
-                humidity, temperature = Adafruit_DHT.read_retry(11, 4)
-                if temperature < 30.0:
+                out = subprocess.Popen(['sudo', 'examples/AdafruitDHT.py'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                stdout,stderr = out.communicate()
+                if float(stdout.split()[0]) < 30:
                     GPIO.output(LedPin, GPIO.LOW)   # led on
                     time.sleep(1.0)                 # wait 1 sec
                 else:
