@@ -4,11 +4,6 @@ import RPi.GPIO as GPIO
 import time
 import subprocess
 
-# Parse command line parameters.
-sensor_args = { '11': Adafruit_DHT.DHT11,
-                '22': Adafruit_DHT.DHT22,
-                '2302': Adafruit_DHT.AM2302 }
-
 LedPin = 11    # pin11
 
 def setup():
@@ -20,10 +15,15 @@ def loop():
         while True:
                 out = subprocess.Popen(['sudo', 'examples/AdafruitDHT.py'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 stdout,stderr = out.communicate()
-                if float(stdout.split()[0]) < 30:
+                temperature = float(stdout.split()[0])
+                if temperature < 30.0:
+                    print('Led on')
+                    print('{0:0.1f}'.format(temperature))
                     GPIO.output(LedPin, GPIO.LOW)   # led on
                     time.sleep(1.0)                 # wait 1 sec
                 else:
+                    print('Led off')
+                    print('{0:0.1f}'.format(temperature))
                     GPIO.output(LedPin, GPIO.HIGH)  # led off
                 time.sleep(5.0)                 # wait 1 sec
 
