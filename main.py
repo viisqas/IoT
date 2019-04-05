@@ -3,8 +3,15 @@ import sys
 import RPi.GPIO as GPIO
 import time
 import subprocess
+import paho.mqtt.client as mqtt
 
 LedPin = 11    # pin11
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+
+client.connect("159.69.95.154", 1883, 60)
 
 def setup():
         GPIO.setmode(GPIO.BOARD)       # Set the board mode to numbers pins by physical location
@@ -16,6 +23,7 @@ def loop():
                 out = subprocess.Popen(['sudo', 'examples/AdafruitDHT.py'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 stdout,stderr = out.communicate()
                 temperature = float(stdout.split()[0])
+                client.publish("house/temp", temperature)
                 if temperature < 30.0:
                     print('Led on')
                     print('{0:0.1f}'.format(temperature))
@@ -31,6 +39,8 @@ def destroy():
 
         GPIO.output(LedPin, GPIO.HIGH)     # led off
         GPIO.cleanup()                     # Release resource
+
+
 
 
 if __name__ == '__main__':     # Program start from here
