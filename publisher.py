@@ -14,7 +14,6 @@ def on_publish(client,userdata,result):             #create function for callbac
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
-    print("userdata "+str(userdata))
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):

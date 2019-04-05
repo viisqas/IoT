@@ -8,17 +8,12 @@ import paho.mqtt.client as mqtt
 LedPin = 11    # pin11
 
 client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
 
 client.connect("159.69.95.154", 1883, 60)
 
 def on_publish(client,userdata,result):             #create function for callback
     print("data published \n")
     pass
-
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
 
 # The callback for when a PUBLISH message is received from the server.
 
